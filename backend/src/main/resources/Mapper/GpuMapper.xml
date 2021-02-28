@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.srx.spring.development.Mapper.GpuMapper">
+    <resultMap id="gpu" type="com.srx.spring.development.Entities.GPUInfo">
+        <!--        number  name               total_memory  used_memory  usable_memory  usage_rate  status  -->
+        <id column="number" property="number"/>
+        <result column="total_memory" property="totalMemory"/>
+        <result column="used_memory" property="usedMemory"/>
+        <result column="usable_memory" property="usableMemory"/>
+        <result column="usage_rate" property="usageRate"/>
+        <result column="status" property="status"/>
+    </resultMap>
+
+    <resultMap id="gpuDraw" type="com.srx.spring.development.Entities.GPUDraw">
+        <id column="id" property="id"/>
+        <result column="name" property="name"/>
+        <result column="gpu_id" property="gpuId"/>
+        <result column="usage_rate" property="usageRate"/>
+        <result column="create_time" property="createTime"/>
+    </resultMap>
+
+    <insert id="insertGpu" keyProperty="number" keyColumn="number"
+            parameterType="com.srx.spring.development.Entities.GPUInfo">
+        insert into gpu(number,name,total_memory,used_memory,usable_memory,usage_rate,status)
+        values (#{number},#{name},#{totalMemory},#{usedMemory},#{usableMemory},#{usageRate},#{status})
+    </insert>
+
+    <insert id="insertGpuDraw" keyProperty="id" keyColumn="id"
+            parameterType="com.srx.spring.development.Entities.GPUDraw">
+        insert into gpu_draw(name,gpu_id,usage_rate)
+        values (#{name},#{gpuId},#{usageRate})
+    </insert>
+
+    <select id="queryGpuStatusPointList" resultType="String">
+        select usage_rate from gpu_draw where name=#{name} and gpu_id=#{gpuId} order by create_time desc limit 12
+    </select>
+
+    <select id="queryGpuList" resultMap="gpu">
+        select * from gpu WHERE STATUS=0 OR STATUS=1
+    </select>
+    <update id="updateStatus" keyProperty="number" keyColumn="number">
+        update gpu set status=#{status} where `number`=#{number}
+    </update>
+
+    <select id="queryAllGpuNumber" resultType="int">
+        SELECT COUNT(*) FROM gpu WHERE STATUS=0 OR STATUS=1
+    </select>
+    <!--    number  name               total_memory  used_memory  usable_memory  usage_rate  status-->
+    <update id="updateGpu" parameterType="com.srx.spring.development.Entities.GPUInfo">
+        update gpu
+        <trim prefix="set" suffixOverrides=",">
+            <if test="totalMemory!=null">total_memory=#{totalMemory},</if>
+            <if test="usedMemory!=null">used_memory=#{usedMemory},</if>
+            <if test="usableMemory!=null">usable_memory=#{usableMemory},</if>
+            <if test="usageRate!=null">usage_rate=#{usageRate},</if>
+            <if test="status!=null">status=#{status},</if>
+        </trim>
+        where `number`=#{number}
+    </update>
+
+
+</mapper>

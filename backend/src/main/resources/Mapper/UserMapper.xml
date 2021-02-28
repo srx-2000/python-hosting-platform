@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.srx.spring.development.Mapper.UserMapper">
+    <!--user_id  username  password  email       authority  -->
+    <resultMap id="userResult" type="com.srx.spring.development.Entities.User">
+        <id property="userId" column="user_id"/>
+        <result property="username" column="username"/>
+        <result property="password" column="password"/>
+        <result property="email" column="email"/>
+        <result property="userKey" column="user_key"/>
+        <result property="nickname" column="nickname"/>
+        <result property="phone" column="phone"/>
+    </resultMap>
+
+    <resultMap id="userInfoResult" type="com.srx.spring.development.Entities.User">
+        <id property="userId" column="user_id"/>
+        <result property="nickname" column="nickname"/>
+        <result property="phone" column="phone"/>
+        <result property="username" column="username"/>
+        <result property="userKey" column="user_key"/>
+    </resultMap>
+    <sql id="baseSelect">
+        select * from `user`
+    </sql>
+    <insert id="insertUser" useGeneratedKeys="true" keyColumn="user_id" keyProperty="userId"
+            parameterType="com.srx.spring.development.Entities.User">
+        insert into user(username,password,email,user_key) values (#{username},#{password},#{email},#{userKey})
+    </insert>
+    <select id="login" resultMap="userResult">
+        select u.*,ui.* from user u
+        join user_info ui on
+        u.user_id=ui.user_id
+        where email=#{username} or username=#{username} and password=#{password}
+    </select>
+    <select id="verification" resultMap="userResult">
+        <include refid="baseSelect"/>
+        where username=#{uniqueId} or email=#{uniqueId}
+    </select>
+
+    <select id="queryUserInfoById" resultMap="userInfoResult">
+        select * from user_to_info where user_id=#{userId}
+    </select>
+
+    <select id="queryUsername" resultType="String">
+        select user_key from `user` where username=#{username}
+    </select>
+
+    <select id="queryEmail" resultType="String">
+        select user_key from `user` where email=#{email}
+    </select>
+
+    <update id="updatePassword">
+        update `user` set password = #{password} where email=#{email};
+    </update>
+
+</mapper>

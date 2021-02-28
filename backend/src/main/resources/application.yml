@@ -1,0 +1,33 @@
+server:
+  port: 8888
+  tomcat:
+    accesslog:
+      encoding: utf-8
+
+spring:
+  datasource:
+    username: spring
+    password: password
+    url: jdbc:mysql://localhost:3306/development?useUnicode=true&characterEncoding=utf-8&useSSL=true&serverTimezone=UTC
+    driver-class-name: com.mysql.jdbc.Driver
+  servlet:
+    multipart:
+      max-file-size: 100MB
+      max-request-size: 1000MB
+
+
+mybatis:
+  mapper-locations: classpath:Mapper/*.xml
+  type-aliases-package: com.srx.spring.development.Entities
+
+logging:
+  file:
+    name: D:/log/development/error.log
+
+
+
+
+
+
+
+

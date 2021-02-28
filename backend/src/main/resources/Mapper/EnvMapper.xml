@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.srx.spring.development.Mapper.EnvMapper">
+
+    <resultMap id="env" type="com.srx.spring.development.Entities.Env">
+        <id column="env_id" property="envId"/>
+        <result column="status" property="status"/>
+        <result column="create_time" property="createTime"/>
+        <result column="has_list" property="hasList"/>
+        <result column="final_live_time" property="finalLiveTime"/>
+        <result column="env_name" property="envName"/>
+        <result column="user_key" property="userKey"/>
+        <collection column="task_id" property="taskList" javaType="java.util.ArrayList"
+                    ofType="com.srx.spring.development.Entities.Task">
+            <id column="task_id" property="taskId"/>
+            <result column="task_title" property="taskTitle"/>
+            <result column="create_time" property="createTime"/>
+            <result column="task_key" property="taskKey"/>
+            <result column="user_key" property="userKey"/>
+            <result column="status" property="status"/>
+            <result column="task_description" property="taskDescription"/>
+            <result column="requirements_path" property="requirementsPath"/>
+            <result column="final_live_time" property="finalLiveTime"/>
+            <result column="dead_time" property="deadTime"/>
+            <result column="gpu_id" property="gpuId"/>
+        </collection>
+    </resultMap>
+
+    <resultMap id="envWithoutTask" type="com.srx.spring.development.Entities.Env">
+        <id column="env_id" property="envId"/>
+        <result column="status" property="status"/>
+        <result column="create_time" property="createTime"/>
+        <result column="has_list" property="hasList"/>
+        <result column="final_live_time" property="finalLiveTime"/>
+        <result column="env_name" property="envName"/>
+        <result column="user_key" property="userKey"/>
+    </resultMap>
+    <insert id="insertEnv" useGeneratedKeys="true" keyColumn="env_id" keyProperty="envId"
+            parameterType="com.srx.spring.development.Entities.Env">
+        insert into env(has_list,env_name) values(#{hasList},#{envName})
+    </insert>
+
+    <update id="updateEnvStatusToDestroy" keyColumn="env_id" keyProperty="envId">
+        update env set status=0 where env_name=#{envName}
+    </update>
+
+    <update id="updateEnvHasList" keyColumn="env_id" keyProperty="envId">
+        update env set has_list=#{hasList} where status=1 and env_name=#{envName}
+    </update>
+
+    <update id="updateFinalLiveTime" keyColumn="env_id" keyProperty="envId">
+        update env set final_live_time = #{finalLiveTime} where status=1 and env_name=#{envName};
+    </update>
+
+
+    <select id="queryTaskListByEnvName" resultMap="env">
+        SELECT * FROM env e
+        JOIN env_task et
+        ON e.`env_id`=et.`env_id`
+        JOIN task t
+        ON t.task_id=et.task_id
+        WHERE status=1 and e.env_name=#{envName}
+    </select>
+
+    <select id="queryEnvListByUserKey" resultMap="envWithoutTask">
+        SELECT * FROM env e
+        WHERE status=1 and e.env_name like '%${userKey}%' ORDER BY e.create_time DESC LIMIT #{begin},#{pageSize}
+    </select>
+
+    <select id="queryEnvListWithTaskListByUserKey" resultMap="env">
+        SELECT * FROM env_task et
+        JOIN task t
+        ON t.task_id=et.task_id
+        JOIN env e
+        ON e.`env_id`=et.`env_id`
+        WHERE et.user_key= #{userKey}
+    </select>
+
+    <select id="queryEnvNameByEnvId" resultType="String">
+        select env_name from env where env_id=#{envId}
+    </select>
+
+    <select id="queryEnvIdByEnvName" resultType="Integer">
+        select env_id from env where env_name=#{envName}
+    </select>
+
+    <update id="updateUserKey" keyColumn="env_id" keyProperty="envId">
+        update env_task set user_key = #{userKey} where env_id=#{env_id};
+    </update>
+
+    <select id="queryCountByUserKey" resultType="Integer">
+        select count(*) from env where status=1 and env_name like '%${userKey}%'
+    </select>
+
+    <select id="queryEnvListByString" resultMap="envWithoutTask">
+        select * from env where status=1 and env_name like '%${userKey}%' and  env_name like '%${string}%' ORDER BY create_time DESC LIMIT #{begin},#{pageSize}
+    </select>
+
+    <select id="queryCountByString" resultType="Integer">
+        select count(*) from env where status=1 and env_name like '%${userKey}%' and  env_name like '%${string}%'
+    </select>
+
+</mapper>

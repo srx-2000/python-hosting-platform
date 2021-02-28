@@ -1,0 +1,209 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.srx.spring.development.Mapper.TaskMapper">
+    <!--    <resultMap id="base" type="com.srx.spring.development.Entities.Task">-->
+    <!--        <id column="task_id" property="taskId"/>-->
+    <!--        <result column="task_title" property="taskTitle"/>-->
+    <!--        <result column="create_time" property="createTime"/>-->
+    <!--        <result column="task_key" property="taskKey"/>-->
+    <!--        <result column="user_key" property="userKey"/>-->
+    <!--        <result column="status" property="status"/>-->
+    <!--        <result column="task_description" property="taskDescription"/>-->
+    <!--        <result column="requirements_path" property="requirementsPath"/>-->
+    <!--        <result column="dead_time" property="deadTime"/>-->
+    <!--    </resultMap>-->
+    <resultMap id="task" type="com.srx.spring.development.Entities.Task">
+        <id column="task_id" property="taskId"/>
+        <result column="task_title" property="taskTitle"/>
+        <result column="create_time" property="createTime"/>
+        <result column="task_key" property="taskKey"/>
+        <result column="user_key" property="userKey"/>
+        <result column="status" property="status"/>
+        <result column="task_description" property="taskDescription"/>
+        <result column="requirements_path" property="requirementsPath"/>
+        <result column="dead_time" property="deadTime"/>
+        <result column="gpu_id" property="gpuId"/>
+        <result column="final_live_time" property="finalLiveTime"/>
+        <association property="env" javaType="com.srx.spring.development.Entities.Env">
+            <id column="env_id" property="envId"/>
+            <result column="status" property="status"/>
+            <result column="creat_time" property="creatTime"/>
+            <result column="has_list" property="hasList"/>
+            <result column="env_name" property="envName"/>
+            <result column="user_key" property="userKey"/>
+        </association>
+    </resultMap>
+
+    <resultMap id="taskNoEnv" type="com.srx.spring.development.Entities.Task">
+        <id column="task_id" property="taskId"/>
+        <result column="task_title" property="taskTitle"/>
+        <result column="create_time" property="createTime"/>
+        <result column="task_key" property="taskKey"/>
+        <result column="user_key" property="userKey"/>
+        <result column="status" property="status"/>
+        <result column="task_description" property="taskDescription"/>
+        <result column="requirements_path" property="requirementsPath"/>
+        <result column="dead_time" property="deadTime"/>
+        <result column="gpu_id" property="gpuId"/>
+        <result column="final_live_time" property="finalLiveTime"/>
+    </resultMap>
+
+    <resultMap id="queue" type="com.srx.spring.development.Entities.TaskQueue">
+        <result column="task_key" property="taskKey"/>
+        <result column="gpu_id" property="gpuId"/>
+        <result column="join_time" property="joinTime"/>
+        <result column="status" property="status"/>
+    </resultMap>
+    <sql id="baseSelect">
+        select * from task
+    </sql>
+
+    <insert id="insertTask" parameterType="com.srx.spring.development.Entities.Task" useGeneratedKeys="true"
+            keyColumn="task_id" keyProperty="taskId">
+        insert into task(task_title,task_key,user_key,requirements_path,gpu_id
+        <if test="taskDescription!=null">,task_description</if>
+        <if test="deadTime!=null">,dead_time</if>
+        <if test="finalLiveTime!=null">,final_live_time</if>
+        )
+        values (#{taskTitle},#{taskKey},#{userKey},#{requirementsPath},#{gpuId}
+        <if test="taskDescription!=null">,#{taskDescription}</if>
+        <if test="deadTime!=null">,#{deadTime}</if>
+        <if test="finalLiveTime!=null">,#{finalLiveTime}</if>
+        )
+    </insert>
+
+    <insert id="insertTaskQueue" parameterType="com.srx.spring.development.Entities.TaskQueue">
+        insert into task_queue(task_key,gpu_id) values (#{taskKey},#{gpuId})
+    </insert>
+
+    <insert id="insertEnvTask">
+        insert into env_task values (#{envId},#{taskId},#{taskKey},#{userKey})
+    </insert>
+
+    <select id="queryTaskByTaskKey" resultMap="task">
+        <include refid="baseSelect"/>
+        join env_task on env_task.task_id=task.task_id
+        join env on env.env_id=env_task.env_id
+        where task.task_key=#{taskKey}
+    </select>
+
+    <select id="queryTaskListByUserKey" resultMap="task">
+        <include refid="baseSelect"/>
+        join env_task on env_task.task_id=task.task_id
+        join env on env.env_id=env_task.env_id
+        where task.user_key=#{userKey}
+        <if test="status!=null">
+            and task.status=#{status}
+        </if>
+        <if test="begin!=null">
+            ORDER BY task.create_time DESC LIMIT #{begin},#{pageSize}
+        </if>
+    </select>
+
+    <select id="queryTaskListByEnvName" resultMap="taskNoEnv">
+        <include refid="baseSelect"/>
+        join env_task on env_task.task_id=task.task_id
+        join env on env.env_id=env_task.env_id
+        where env.env_name=#{envName}
+        <if test="status!=null">
+            and task.status=#{status}
+        </if>
+        <if test="begin!=null">
+            ORDER BY task.create_time DESC LIMIT #{begin},#{pageSize}
+        </if>
+    </select>
+
+    <!--    <update id="updateTaskStatus">-->
+    <!--        update task set status=#{status} where task_key=#{taskKey}-->
+    <!--    </update>-->
+    <select id="queryTaskStatus" resultType="int">
+        select status from task where task_key=#{taskKey}
+    </select>
+
+    <update id="updateTaskStatusToNotComplete">
+        update task set status=1 where task_key=#{taskKey}
+    </update>
+
+    <update id="updateTaskStatusToDoing">
+        update task set status=0 where task_key=#{taskKey}
+    </update>
+    <update id="updateTaskStatusToComplete">
+        update task set status=-1 where task_key=#{taskKey}
+    </update>
+    <update id="updateTaskStatusToQueue">
+        update task set status=2 where task_key=#{taskKey}
+    </update>
+
+    <update id="updateTaskUserKey">
+        update task set user_key=#{userKey} where task_key=#{taskKey}
+    </update>
+
+    <update id="updateAll" parameterType="com.srx.spring.development.Entities.Task">
+        update task
+        <trim prefix="set" suffixOverrides=",">
+            <if test="taskTitle!=null">task_title=#{taskTitle},</if>
+            <if test="taskDescription!=null">task_description=#{taskDescription},</if>
+            <if test="requirementsPath!=null">requirements_path=#{requirementsPath},</if>
+            <if test="finalLiveTime!=null">final_live_time=#{finalLiveTime},</if>
+            <if test="deadTime!=null">dead_time=#{deadTime},</if>
+            <if test="gpuId!=null">gpu_id=#{gpuId},</if>
+        </trim>
+        WHERE task_key=#{taskKey}
+    </update>
+
+    <update id="updateRequirementsPath">
+        update task set requirements_path=#{requirementsPath} where task_key=#{taskKey}
+    </update>
+
+    <update id="updateDeadTime">
+        update task set dead_time=#{deadTime} where task_key=#{taskKey}
+    </update>
+
+    <update id="updateTaskTitle">
+        update task set task_title=#{taskTitle} where task_key=#{taskKey}
+    </update>
+
+    <update id="updateTaskDescription">
+        update task set task_description=#{taskDescription} where task_key=#{taskKey}
+    </update>
+
+    <update id="updateFinalLiveTime">
+        update task set final_live_time=#{finalLiveTime} where task_key=#{taskKey}
+    </update>
+
+    <update id="updateStatusToPop">
+        update task_queue set status=0 where task_key=#{taskKey};
+    </update>
+
+    <select id="queryFirstTask" resultMap="queue">
+        SELECT * FROM task_queue WHERE `status`=1 and gpu_id=#{gpuId} ORDER BY join_time asc LIMIT 1
+    </select>
+
+    <update id="updateEnvId">
+        update env_task set env_id = #{envId} where task_key=#{taskKey};
+    </update>
+
+    <select id="queryTaskJoinTime" resultType="String">
+        SELECT join_time FROM task_queue WHERE task_key=#{taskKey}
+    </select>
+
+    <select id="queryTaskCountByUserKey" resultType="Integer">
+        select count(*) from task where user_key=#{userKey}
+        <if test="status!=null">
+            and status=#{status}
+        </if>
+    </select>
+
+    <select id="queryTaskCountByEnvName" resultType="Integer">
+        select count(*) from task
+        join env_task on env_task.task_id=task.task_id
+        join env on env.env_id=env_task.env_id
+        where env.env_name=#{envName}
+        <if test="status!=null">
+            and task.status=#{status}
+        </if>
+    </select>
+
+</mapper>

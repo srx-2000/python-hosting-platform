@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.srx.spring.development.Mapper.FileMapper">
+
+    <!--    input_id  task_key                              file_path                                                                                      status  file_name        -->
+    <resultMap id="input" type="com.srx.spring.development.Entities.InputFile">
+        <id column="input_id" property="inputId"/>
+        <result column="task_key" property="taskKey"/>
+        <result column="file_path" property="filePath"/>
+        <result column="file_name" property="fileName"/>
+        <result column="status" property="status"/>
+    </resultMap>
+
+<!--    output_id  task_key  file_path  status  file_name-->
+    <resultMap id="output" type="com.srx.spring.development.Entities.OutputFile">
+        <id column="output_id" property="outputId"/>
+        <result column="task_key" property="taskKey"/>
+        <result column="file_path" property="filePath"/>
+        <result column="file_name" property="fileName"/>
+        <result column="status" property="status"/>
+    </resultMap>
+
+    <resultMap id="py" type="com.srx.spring.development.Entities.PyFile">
+        <id column="py_id" property="pyId"/>
+        <result column="task_key" property="taskKey"/>
+        <result column="file_path" property="filePath"/>
+        <result column="file_name" property="fileName"/>
+        <result column="status" property="status"/>
+    </resultMap>
+    <!--    输入文件mapper-->
+    <insert id="insertInputFile" useGeneratedKeys="true" keyColumn="input_id" keyProperty="inputId"
+            parameterType="com.srx.spring.development.Entities.InputFile">
+        insert into input(task_key,file_path,file_name) values (#{taskKey},#{filePath},#{fileName})
+    </insert>
+    <select id="queryInputFileByTaskKey" resultMap="input">
+        select * from `input`
+        where task_key=#{taskKey}
+    </select>
+    <update id="updateInputFilePath">
+        update `input` set file_path=#{fiilePath} where task_key=#{taskKey}
+    </update>
+    <update id="updateInputFileStatusToDelete" keyColumn="input_id" keyProperty="inputId">
+        update `input` set status=0 where task_key=#{taskKey}
+    </update>
+
+    <!--输出文件mapper    -->
+    <insert id="insertOutputFile" useGeneratedKeys="true" keyColumn="output_id" keyProperty="outputId"
+            parameterType="com.srx.spring.development.Entities.OutputFile">
+        insert into input(task_key,file_path,file_name) values (#{taskKey},#{filePath},#{fileName})
+    </insert>
+    <select id="queryOutputFileByTaskKey" resultMap="output">
+        select * from `output`
+        where task_key=#{taskKey}
+    </select>
+    <update id="updateOutputFilePath">
+        update `output` set file_path=#{fiilePath} where task_key=#{taskKey}
+    </update>
+    <update id="updateOutputFileStatusToDelete" keyColumn="output_id" keyProperty="outputId">
+        update `output` set status=0 where task_key=#{taskKey}
+    </update>
+
+    <!--    py文件mapper-->
+    <insert id="insertPyFile" useGeneratedKeys="true" keyColumn="py_id" keyProperty="pyId"
+            parameterType="com.srx.spring.development.Entities.PyFile">
+        insert into py(task_key,file_path,file_name) values (#{taskKey},#{filePath},#{fileName})
+    </insert>
+    <select id="queryPyFileByTaskKey" resultMap="py">
+        select * from `py`
+        where task_key=#{taskKey}
+    </select>
+    <update id="updatePyFilePath">
+        update `py` set file_path=#{fiilePath} where task_key=#{taskKey}
+    </update>
+    <update id="updatePYFileStatusToDelete" keyColumn="py_id" keyProperty="pyId">
+        update `py` set status=0 where task_key=#{taskKey}
+    </update>
+</mapper>
