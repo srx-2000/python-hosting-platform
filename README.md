@@ -57,19 +57,19 @@
 
 **登录界面**
 
-![Image text](https://github.com/srx-2000/python-hosting-platform/tree/master/screenshots/login.png)
+![Image text](https://github.com/srx-2000/python-hosting-platform/tree/main/screenshots/login.png)
 
 **主界面**
 
-![Image text](https://github.com/srx-2000/python-hosting-platform/tree/master/screenshots/main.png)
+![Image text](https://github.com/srx-2000/python-hosting-platform/tree/main/screenshots/main.png)
 
 **任务列表**
 
-![Image text](https://github.com/srx-2000/python-hosting-platform/tree/master/screenshots/task.png)
+![Image text](https://github.com/srx-2000/python-hosting-platform/tree/main/screenshots/task.png)
 
 **gpu列表**
 
-![Image text](https://github.com/srx-2000/python-hosting-platform/tree/master/screenshots/gpu.png)
+![Image text](https://github.com/srx-2000/python-hosting-platform/tree/main/screenshots/gpu.png)
 
 ### 更新日志
 
