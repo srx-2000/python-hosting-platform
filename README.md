@@ -9,10 +9,10 @@
 ​	现阶段主要功能有如下5个模块：
 
 	1. 用户登录、注册
- 	2. 用户创建python环境
- 	3. 用户创建、编辑、运行任务（python项目）
- 	4. gpu状态监督
- 	5. 结果获取
+	2. 用户创建python环境
+	3. 用户创建、编辑、运行任务（python项目）
+	4. gpu状态监督
+	5. 结果获取
 
 ### 技术栈
 
@@ -26,9 +26,9 @@
 **后端**
 
 	1. springboot
- 	2. mybatis
- 	3. mysql
- 	4. maven
+	2. mybatis
+	3. mysql
+	4. maven
 
 ### 项目环境
 
@@ -57,19 +57,19 @@
 
 **登录界面**
 
-![Image text](https://github.com/srx-2000/python-hosting-platform/tree/main/screenshots/login.png)
+![Image text](https://raw.githubusercontent.com/srx-2000/python-hosting-platform/master/screenshots/login.png)
 
 **主界面**
 
-![Image text](https://github.com/srx-2000/python-hosting-platform/tree/main/screenshots/main.png)
+![Image text](https://raw.githubusercontent.com/srx-2000/python-hosting-platform/master/screenshots/main.png)
 
 **任务列表**
 
-![Image text](https://github.com/srx-2000/python-hosting-platform/tree/main/screenshots/task.png)
+![Image text](https://raw.githubusercontent.com/srx-2000/python-hosting-platform/master/screenshots/task.png)
 
 **gpu列表**
 
-![Image text](https://github.com/srx-2000/python-hosting-platform/tree/main/screenshots/gpu.png)
+![Image text](https://raw.githubusercontent.com/srx-2000/python-hosting-platform/master/screenshots/gpu.png)
 
 ### 更新日志
 
